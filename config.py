@@ -6,10 +6,18 @@
 from pydantic import validator
 from pydantic_settings import BaseSettings
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Определяем базовую папку проекта
 BASE_DIR = Path(__file__).resolve().parent
 
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+    print(f"✓ .env файл загружен из {env_path}")
+else:
+    print(f"⚠ .env файл не найден по пути {env_path}")
+    print("⚠ Будут использованы системные переменные окружения")
 
 class Settings(BaseSettings):
     """

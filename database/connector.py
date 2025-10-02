@@ -21,9 +21,13 @@ async def init_connection(conn):
     Устанавливает правильную кодировку для работы с UTF-8
     """
     # Устанавливаем кодировку подключения
-    await conn.execute("SET client_encoding TO 'UTF8'")
-    # Можно добавить другие настройки, например:
-    await conn.execute("SET timezone TO 'Europe/Moscow'")
+    try:
+        await conn.execute("SET client_encoding TO 'UTF8'")
+        await conn.execute("SET timezone TO 'UTC'")
+        logger.debug("Подключение к БД настроено: UTF8, UTC")
+    except Exception as e:
+        logger.error(f"Ошибка настройки подключения к БД: {e}")
+        raise
 
 async def init_db() -> None:
     """

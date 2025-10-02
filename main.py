@@ -17,6 +17,7 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from config import settings, LOGGING_CONFIG
@@ -135,8 +136,17 @@ async def main() -> None:
             )
         )
 
+        try:
+            storage = RedisStorage.from_url(settings.redis_url)
+            logger.info("✓ Используется RedisStorage (данные сохраняются при перезапуске)")
+        except Exception as redis_error:
+            logger.warning(f"⚠ Redis недоступен: {redis_error}")
+            logger.warning("⚠ Используется MemoryStorage - состояния FSM будут потеряны при перезапуске!")
+            logger.warning("⚠ Рекомендуется установить и настроить Redis для production")
+            storage = MemoryStorage()
+
         # Создаем диспетчер с хранилищем в памяти
-        dp = Dispatcher(storage=MemoryStorage())
+        dp = Dispatcher(storage=storage)
 
         # Регистрируем middleware (порядок важен!)
         dp.message.middleware(ErrorHandlingMiddleware())

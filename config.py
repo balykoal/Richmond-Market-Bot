@@ -3,6 +3,7 @@
 Настройки загружаются из переменных окружения
 """
 
+import os
 from pydantic import validator
 from pydantic_settings import BaseSettings
 from pathlib import Path
@@ -43,8 +44,8 @@ class Settings(BaseSettings):
     REDIS_DB: int = 0
 
     # Настройки платежей
-    CARD_NUMBER: str = "1234567890123456"
-    CARD_HOLDER: str = "Иван Иванов"
+    CARD_NUMBER: str = os.getenv("CARD_NUMBER")
+    CARD_HOLDER: str = os.getenv("CARD_HOLDER")
 
     # Настройки приложения
     DEBUG: bool = False
